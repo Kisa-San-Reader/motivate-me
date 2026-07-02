@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a1628">
+<title>Motivate Me</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;width:100%;overflow:hidden;font-family:'Georgia',serif}
+</style>
+</head>
+<body>
+<style>
+/* ===== BASE SCENE ===== */
+.scene{position:fixed;inset:0;width:100%;height:100%;transition:opacity 0.8s ease}
+.scene-bg{position:absolute;inset:0;z-index:0}
+.particles{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+
+/* ===== SCENE: Lantern Lake (dark water, glowing amber lanterns, teal reflections) ===== */
+.scene-lanternlake .scene-bg{
+  background:linear-gradient(180deg,#0a0f1a 0%,#0d1b2a 25%,#0a2a2a 50%,#061a1a 75%,#040e0e 100%);
+}
+.scene-lanternlake .scene-bg::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:45%;
+  background:linear-gradient(0deg,rgba(0,80,80,0.3),rgba(0,60,70,0.2),transparent);
+}
+.scene-lanternlake .scene-bg::after{
+  content:'';position:absolute;top:20%;left:15%;width:30px;height:40px;border-radius:4px 4px 50% 50%;
+  background:linear-gradient(180deg,#ff8c00,#ffb347);
+  box-shadow:0 0 30px rgba(255,140,0,0.6),0 0 60px rgba(255,140,0,0.3),
+    80px 30px 0 0 #ff8c00,80px 30px 30px rgba(255,140,0,0.5),
+    170px -10px 0 0 #ffb347,170px -10px 25px rgba(255,179,71,0.4),
+    250px 20px 0 0 #ff8c00,250px 20px 30px rgba(255,140,0,0.5);
+  filter:blur(1px);
+}
+
+/* ===== SCENE: Bamboo Forest (emerald green, gold particles, deep atmosphere) ===== */
+.scene-bamboo .scene-bg{
+  background:linear-gradient(180deg,#0a2e1a 0%,#0d3d22 30%,#1a5c35 60%,#0f3a20 100%);
+}
+.scene-bamboo .scene-bg::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent,transparent 30px,rgba(0,80,40,0.3) 30px,rgba(0,80,40,0.3) 32px,transparent 32px,transparent 60px);
+}
+.scene-bamboo .scene-bg::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:30%;
+  background:linear-gradient(180deg,rgba(10,46,26,0.9),transparent);
+}
+
+/* ===== SCENE: Temple Cliff (floating temple, purple sunset, waterfalls) ===== */
+.scene-templecliff .scene-bg{
+  background:linear-gradient(180deg,#1a0533 0%,#2d1052 20%,#4a1a7a 40%,#6b2fa0 60%,#e88dba 80%,#ffb3d1 100%);
+}
+.scene-templecliff .scene-bg::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:35%;
+  background:linear-gradient(0deg,rgba(26,5,51,0.9),rgba(45,16,82,0.4),transparent);
+}
+.scene-templecliff .scene-bg::after{
+  content:'';position:absolute;top:25%;left:50%;transform:translateX(-50%);
+  width:120px;height:80px;
+  background:linear-gradient(0deg,rgba(100,50,150,0.5),rgba(200,150,220,0.2));
+  clip-path:polygon(20% 100%,30% 60%,35% 60%,40% 30%,45% 60%,50% 20%,55% 60%,60% 30%,65% 60%,70% 60%,80% 100%);
+}
+/* ===== SCENE: Blue Butterfly Forest (dark trees, glowing blue butterflies) ===== */
+.scene-blueforest .scene-bg{
+  background:linear-gradient(180deg,#050a15 0%,#0a1a30 30%,#0d2040 60%,#081828 100%);
+}
+.scene-blueforest .scene-bg::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:70%;
+  background:repeating-linear-gradient(85deg,transparent,transparent 40px,rgba(0,0,0,0.3) 40px,rgba(0,0,0,0.3) 42px);
+}
+.scene-blueforest .scene-bg::after{
+  content:'';position:absolute;top:30%;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;background:rgba(100,200,255,0.9);
+  box-shadow:
+    0 0 15px rgba(100,200,255,0.8),0 0 30px rgba(100,200,255,0.4),
+    30px -20px 0 rgba(80,180,255,0.7),30px -20px 15px rgba(80,180,255,0.4),
+    -40px 10px 0 rgba(120,220,255,0.8),-40px 10px 15px rgba(120,220,255,0.4),
+    60px 30px 0 rgba(100,200,255,0.6),60px 30px 12px rgba(100,200,255,0.3),
+    -20px -40px 0 rgba(140,230,255,0.7),-20px -40px 15px rgba(140,230,255,0.4),
+    80px -10px 0 rgba(80,180,255,0.5),80px -10px 10px rgba(80,180,255,0.3),
+    -60px -25px 0 rgba(100,210,255,0.6),-60px -25px 12px rgba(100,210,255,0.3);
+}
+
+/* ===== SCENE: Red Moon (dramatic red circle, gold/black tree silhouettes) ===== */
+.scene-redmoon .scene-bg{
+  background:linear-gradient(180deg,#0a0a0a 0%,#1a0a0a 30%,#2a1010 60%,#0a0a0a 100%);
+}
+.scene-redmoon .scene-bg::before{
+  content:'';position:absolute;top:10%;left:50%;transform:translateX(-50%);
+  width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(circle,#cc0000 0%,#aa0000 50%,rgba(150,0,0,0.3) 80%,transparent);
+  box-shadow:0 0 80px rgba(200,0,0,0.4),0 0 120px rgba(150,0,0,0.2);
+}
+.scene-redmoon .scene-bg::after{
+  content:'';position:absolute;bottom:10%;left:20%;width:60%;height:40%;
+  background:radial-gradient(ellipse at bottom,rgba(20,10,5,0.9),transparent 70%);
+}
+
+/* ===== SCENE: Torii Gate (red gate, mist, green mountains) ===== */
+.scene-torii .scene-bg{
+  background:linear-gradient(180deg,#ffcba4 0%,#ff9a6c 20%,#d4724e 40%,#2d5a3a 60%,#1a3a25 100%);
+}
+.scene-torii .scene-bg::before{
+  content:'';position:absolute;top:20%;left:50%;transform:translateX(-50%);
+  width:100px;height:120px;
+  border-top:12px solid #cc2200;
+  border-left:8px solid #cc2200;border-right:8px solid #cc2200;
+  border-bottom:none;border-radius:4px 4px 0 0;
+}
+.scene-torii .scene-bg::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:35%;
+  background:linear-gradient(0deg,rgba(26,58,37,0.95),rgba(45,90,58,0.5),transparent);
+}
+/* ===== SCENE: Lotus Pond (teal water, pink lotus, warm light) ===== */
+.scene-lotus .scene-bg{
+  background:linear-gradient(180deg,#1a3040 0%,#0d4a5a 30%,#0a6070 50%,#085060 70%,#0a3040 100%);
+}
+.scene-lotus .scene-bg::before{
+  content:'';position:absolute;bottom:20%;left:30%;
+  width:40px;height:25px;border-radius:50% 50% 40% 40%;
+  background:linear-gradient(0deg,#ff69b4,#ffb6c1);
+  box-shadow:80px 10px 0 2px #ff69b4,80px 10px 15px rgba(255,105,180,0.4),
+    -50px 15px 0 1px #ffb6c1,-50px 15px 12px rgba(255,182,193,0.3),
+    120px -5px 0 3px #ff69b4,120px -5px 20px rgba(255,105,180,0.3);
+}
+.scene-lotus .scene-bg::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:30%;
+  background:linear-gradient(0deg,rgba(8,80,96,0.8),transparent);
+}
+
+/* ===== SCENE: Cherry Blossom Village (pink trees, traditional houses) ===== */
+.scene-blossomvillage .scene-bg{
+  background:linear-gradient(180deg,#e8f4f8 0%,#b3e0ee 20%,#87ceeb 40%,#98d4a8 70%,#6ab07a 100%);
+}
+.scene-blossomvillage .scene-bg::before{
+  content:'';position:absolute;top:10%;left:10%;width:30%;height:40%;
+  background:radial-gradient(ellipse,rgba(255,182,193,0.7),rgba(255,192,203,0.3) 50%,transparent 70%);
+  filter:blur(8px);
+}
+.scene-blossomvillage .scene-bg::after{
+  content:'';position:absolute;top:15%;right:15%;width:25%;height:35%;
+  background:radial-gradient(ellipse,rgba(255,182,193,0.6),rgba(255,192,203,0.2) 50%,transparent 70%);
+  filter:blur(8px);
+}
+
+/* ===== SCENE: Ghost Village (cute purple/blue night, warm window glows) ===== */
+.scene-ghostvillage .scene-bg{
+  background:linear-gradient(180deg,#1a1040 0%,#2a1860 30%,#3a2080 50%,#2a1555 70%,#150a30 100%);
+}
+.scene-ghostvillage .scene-bg::before{
+  content:'';position:absolute;bottom:10%;left:15%;
+  width:20px;height:20px;border-radius:3px;
+  background:rgba(255,200,100,0.8);
+  box-shadow:0 0 15px rgba(255,200,100,0.5),
+    50px 5px 0 0 rgba(255,200,100,0.7),50px 5px 12px rgba(255,200,100,0.4),
+    110px -10px 0 0 rgba(255,180,80,0.6),110px -10px 10px rgba(255,180,80,0.3),
+    170px 8px 0 0 rgba(255,200,100,0.7),170px 8px 12px rgba(255,200,100,0.4),
+    230px -5px 0 0 rgba(255,180,80,0.6),230px -5px 10px rgba(255,180,80,0.3);
+}
+.scene-ghostvillage .scene-bg::after{
+  content:'';position:absolute;top:15%;left:50%;transform:translateX(-50%);
+  width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,180,255,0.4),transparent 70%);
+  box-shadow:0 0 40px rgba(200,180,255,0.2);
+}
+/* ===== SCENE: Cozy Window (anime interior, blue sky, plants, warmth) ===== */
+.scene-cozywindow .scene-bg{
+  background:linear-gradient(180deg,#87ceeb 0%,#b0e0f0 30%,#fff8e8 50%,#f5e6d0 70%,#e8d4b8 100%);
+}
+.scene-cozywindow .scene-bg::before{
+  content:'';position:absolute;top:5%;left:50%;transform:translateX(-50%);
+  width:70%;height:45%;border-radius:4px;
+  border:6px solid #8b6f4e;
+  background:linear-gradient(180deg,#87ceeb,#b8e0f0);
+  box-shadow:inset 0 0 30px rgba(135,206,235,0.3);
+}
+.scene-cozywindow .scene-bg::after{
+  content:'';position:absolute;bottom:10%;left:20%;
+  width:30px;height:45px;border-radius:50% 50% 0 0;
+  background:linear-gradient(0deg,#228b22,#32cd32,#90ee90);
+  box-shadow:40px 5px 0 3px #228b22,40px 5px 0 6px rgba(34,139,34,0.3),
+    80px -10px 0 2px #2e8b57,80px -10px 0 5px rgba(46,139,87,0.3);
+}
+
+/* ===== SCENE: Moonlit Mountain (ink wash style, gold moon, misty peaks) ===== */
+.scene-moonmountain .scene-bg{
+  background:linear-gradient(180deg,#0a1628 0%,#152238 30%,#1a2d48 50%,#0f1f35 70%,#080e1a 100%);
+}
+.scene-moonmountain .scene-bg::before{
+  content:'';position:absolute;top:8%;right:20%;
+  width:70px;height:70px;border-radius:50%;
+  background:radial-gradient(circle,#ffe4a0,#ffd700 50%,rgba(255,215,0,0.2) 80%,transparent);
+  box-shadow:0 0 50px rgba(255,215,0,0.3),0 0 100px rgba(255,215,0,0.1);
+}
+.scene-moonmountain .scene-bg::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:50%;
+  background:linear-gradient(0deg,rgba(8,14,26,0.95),transparent);
+  clip-path:polygon(0% 50%,8% 35%,15% 48%,25% 25%,35% 40%,45% 15%,55% 38%,65% 20%,75% 42%,85% 30%,92% 45%,100% 35%,100% 100%,0% 100%);
+}
+
+/* ===== SCENE: Golden Palace (ornate gold arches, divine light) ===== */
+.scene-goldenpalace .scene-bg{
+  background:linear-gradient(180deg,#1a1000 0%,#2a1a05 20%,#3d2810 40%,#5a3d1a 60%,#8b6914 80%,#b8860b 100%);
+}
+.scene-goldenpalace .scene-bg::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:60%;height:70%;
+  background:linear-gradient(0deg,transparent,rgba(255,215,0,0.05) 50%,rgba(255,255,200,0.1));
+  clip-path:ellipse(50% 100% at 50% 0%);
+}
+.scene-goldenpalace .scene-bg::after{
+  content:'';position:absolute;top:5%;left:50%;transform:translateX(-50%);
+  width:8px;height:8px;border-radius:50%;background:rgba(255,255,200,0.9);
+  box-shadow:0 0 30px rgba(255,255,200,0.6),0 0 60px rgba(255,215,0,0.3),
+    -30px 20px 0 2px rgba(255,215,0,0.4),-30px 20px 15px rgba(255,215,0,0.2),
+    30px 20px 0 2px rgba(255,215,0,0.4),30px 20px 15px rgba(255,215,0,0.2);
+}
+/* ===== SCENE: Seaside Sunset Town (warm golden coast, boats, amber sky) ===== */
+.scene-seasidetown .scene-bg{
+  background:linear-gradient(180deg,#ff6b35 0%,#ff8c42 20%,#ffaa5c 40%,#ffd185 55%,#1a8a9a 70%,#0d6070 100%);
+}
+.scene-seasidetown .scene-bg::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:30%;
+  background:linear-gradient(0deg,#0d4050,#1a7080,transparent);
+}
+.scene-seasidetown .scene-bg::after{
+  content:'';position:absolute;top:40%;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,rgba(255,215,0,0.3),rgba(255,200,100,0.5),rgba(255,215,0,0.3),transparent);
+}
+
+/* ===== SCENE: Jade Garden (paper-cut style, green jade, cream, crane) ===== */
+.scene-jade .scene-bg{
+  background:linear-gradient(180deg,#f5f0e0 0%,#e8e0cc 30%,#d4cbb0 50%,#c0b89a 70%,#a8a080 100%);
+}
+.scene-jade .scene-bg::before{
+  content:'';position:absolute;top:20%;left:50%;transform:translateX(-50%);
+  width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,128,80,0.3),rgba(0,100,60,0.15) 50%,transparent 70%);
+  border:2px solid rgba(0,128,80,0.2);
+}
+.scene-jade .scene-bg::after{
+  content:'';position:absolute;bottom:15%;right:20%;width:50px;height:60px;
+  background:linear-gradient(135deg,rgba(0,128,80,0.4),rgba(0,100,60,0.2));
+  clip-path:polygon(50% 0%,80% 30%,100% 60%,80% 90%,50% 100%,30% 80%,0% 50%,20% 20%);
+}
+
+/* ===== SCENE: Pink City Rain (anime rainy street, pink neon, reflections) ===== */
+.scene-pinkcity .scene-bg{
+  background:linear-gradient(180deg,#2a1535 0%,#3d2050 30%,#4a2860 50%,#352040 70%,#1a1028 100%);
+}
+.scene-pinkcity .scene-bg::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:40%;
+  background:linear-gradient(0deg,rgba(255,100,150,0.15),rgba(255,80,130,0.05),transparent);
+}
+.scene-pinkcity .scene-bg::after{
+  content:'';position:absolute;top:30%;left:20%;
+  width:3px;height:3px;border-radius:50%;
+  background:rgba(255,100,200,0.8);
+  box-shadow:
+    0 0 20px rgba(255,100,200,0.6),
+    50px -30px 0 rgba(255,150,200,0.6),50px -30px 15px rgba(255,150,200,0.3),
+    120px 10px 0 rgba(200,100,255,0.5),120px 10px 15px rgba(200,100,255,0.3),
+    180px -20px 0 rgba(255,100,150,0.6),180px -20px 12px rgba(255,100,150,0.3),
+    80px 40px 0 rgba(255,180,220,0.5),80px 40px 10px rgba(255,180,220,0.3);
+}
+/* ===== ANIMATIONS ===== */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes petalFall{0%{transform:translateY(-10vh) translateX(0) rotate(0deg);opacity:0.8}100%{transform:translateY(110vh) translateX(40px) rotate(720deg);opacity:0}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+@keyframes firefly{0%{opacity:0;transform:translate(0,0)}20%{opacity:1}50%{transform:translate(15px,-25px)}80%{opacity:1}100%{opacity:0;transform:translate(-10px,-50px)}}
+@keyframes lanternGlow{0%,100%{opacity:0.6;transform:scale(0.95)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes butterflyFloat{0%{transform:translate(0,0) rotate(0deg);opacity:0}20%{opacity:1}50%{transform:translate(20px,-30px) rotate(5deg)}80%{opacity:0.8}100%{transform:translate(-15px,-60px) rotate(-5deg);opacity:0}}
+@keyframes rainDrop{0%{transform:translateY(-5vh);opacity:0.6}100%{transform:translateY(105vh);opacity:0}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes heartBeat{0%,100%{transform:scale(1)}15%{transform:scale(1.3)}30%{transform:scale(1)}}
+@keyframes breathePulse{0%,100%{transform:scale(1);opacity:0.7}50%{transform:scale(1.2);opacity:1}}
+@keyframes goldDrift{0%{transform:translateY(0) rotate(0deg);opacity:0.8}100%{transform:translateY(100vh) rotate(180deg);opacity:0}}
+@keyframes ghostBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* ===== PARTICLE TYPES ===== */
+.p-petal{position:absolute;border-radius:50% 0 50% 0;animation:petalFall linear infinite}
+.p-sparkle{position:absolute;border-radius:50%;animation:sparkle ease-in-out infinite;
+  box-shadow:0 0 6px currentColor,0 0 12px currentColor}
+.p-firefly{position:absolute;width:6px;height:6px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,150,0.9),transparent);
+  box-shadow:0 0 10px rgba(255,255,100,0.6);animation:firefly ease-in-out infinite}
+.p-lantern{position:absolute;width:12px;height:16px;border-radius:3px 3px 6px 6px;
+  background:linear-gradient(180deg,#ff8c00,#ffb347);
+  box-shadow:0 0 15px rgba(255,140,0,0.6);animation:lanternGlow 3s ease-in-out infinite}
+.p-butterfly{position:absolute;width:10px;height:10px;border-radius:50% 0 50% 0;
+  background:rgba(100,200,255,0.8);box-shadow:0 0 12px rgba(100,200,255,0.6);
+  animation:butterflyFloat ease-in-out infinite}
+.p-rain{position:absolute;width:1px;background:linear-gradient(transparent,rgba(255,255,255,0.3));
+  animation:rainDrop linear infinite}
+.p-gold{position:absolute;width:4px;height:4px;border-radius:50%;
+  background:rgba(255,215,0,0.8);box-shadow:0 0 8px rgba(255,215,0,0.5);
+  animation:goldDrift linear infinite}
+.p-ghost{position:absolute;width:18px;height:22px;border-radius:50% 50% 30% 30%;
+  background:rgba(200,180,255,0.5);animation:ghostBob 2s ease-in-out infinite}
+/* ===== QUOTE OVERLAY ===== */
+.quote-overlay{
+  position:relative;z-index:10;width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:70px 32px 130px;text-align:center;
+}
+.quote-text{
+  font-size:1.3rem;line-height:1.85;color:white;font-style:italic;
+  text-shadow:0 2px 20px rgba(0,0,0,0.6),0 0 40px rgba(0,0,0,0.3);
+  max-width:340px;animation:fadeInUp 0.7s ease both;letter-spacing:0.3px;
+}
+.quote-emoji{font-size:52px;margin-bottom:24px;animation:float 3.5s ease-in-out infinite;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3))}
+.quote-sub{font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:22px;
+  letter-spacing:2px;text-transform:uppercase;text-shadow:0 1px 8px rgba(0,0,0,0.4)}
+.quote-type{position:absolute;top:50px;left:50%;transform:translateX(-50%);
+  font-size:0.6rem;color:rgba(255,255,255,0.4);letter-spacing:3px;text-transform:uppercase}
+
+/* Dark text for light scenes */
+.scene-blossomvillage .quote-text,.scene-cozywindow .quote-text,.scene-jade .quote-text{color:#2a1a3a;text-shadow:0 2px 15px rgba(255,255,255,0.5)}
+.scene-blossomvillage .quote-sub,.scene-cozywindow .quote-sub,.scene-jade .quote-sub{color:rgba(60,40,80,0.6)}
+.scene-blossomvillage .quote-type,.scene-cozywindow .quote-type,.scene-jade .quote-type{color:rgba(60,40,80,0.4)}
+
+/* ===== ACTION BUTTONS ===== */
+.actions-bar{
+  position:fixed;bottom:75px;left:50%;transform:translateX(-50%);
+  display:flex;gap:18px;z-index:100;
+}
+.act-btn{
+  width:50px;height:50px;border-radius:50%;border:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;cursor:pointer;transition:all 0.3s;
+  background:rgba(0,0,0,0.3);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);
+  box-shadow:0 4px 20px rgba(0,0,0,0.2);
+}
+.act-btn:active{transform:scale(0.85)}
+.act-btn.fav-active{background:rgba(233,30,99,0.4);border-color:rgba(233,30,99,0.5);color:#ff6b9d}
+.act-btn.sound-active{background:rgba(100,200,255,0.2);border-color:rgba(100,200,255,0.4);color:#7dd3fc}
+/* ===== BOTTOM NAV ===== */
+.nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  display:flex;justify-content:center;gap:50px;
+  padding:12px 20px 26px;
+  background:linear-gradient(transparent,rgba(0,0,0,0.4));
+}
+.nav-btn{background:none;border:none;font-size:24px;cursor:pointer;
+  opacity:0.5;transition:all 0.3s;padding:8px;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))}
+.nav-btn.active{opacity:1;transform:scale(1.15)}
+
+/* ===== FAVORITES VIEW ===== */
+.favorites-view{
+  position:fixed;inset:0;z-index:150;
+  background:linear-gradient(135deg,#0a1628,#1a0a2e,#0d1b2a);
+  overflow-y:auto;padding:60px 20px 100px;display:none;
+}
+.favorites-view.show{display:block;animation:fadeInUp 0.3s ease}
+.fav-title{text-align:center;font-size:1.2rem;color:rgba(255,255,255,0.7);
+  margin-bottom:28px;letter-spacing:2px}
+.fav-card{
+  background:rgba(255,255,255,0.06);border-radius:16px;
+  padding:22px 20px;margin-bottom:14px;position:relative;
+  border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(5px);
+}
+.fav-card-text{font-size:0.92rem;color:rgba(255,255,255,0.8);font-style:italic;line-height:1.7}
+.fav-card-emoji{margin-bottom:8px;font-size:28px}
+.fav-remove{position:absolute;top:12px;right:14px;background:none;
+  border:none;font-size:18px;cursor:pointer;color:rgba(255,255,255,0.25)}
+.fav-remove:active{color:rgba(255,255,255,0.7)}
+.empty-fav{text-align:center;color:rgba(255,255,255,0.3);font-style:italic;margin-top:80px}
+
+/* ===== SWIPE HINT ===== */
+.swipe-hint{position:fixed;bottom:130px;left:50%;transform:translateX(-50%);
+  font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:2px;
+  animation:fadeInUp 1s ease 3s both}
+
+/* ===== COUNTER ===== */
+.card-counter{position:fixed;top:16px;right:16px;z-index:100;
+  font-size:0.6rem;color:rgba(255,255,255,0.3);letter-spacing:1px}
+</style>
+<!-- SCENE -->
+<div class="scene" id="scene">
+  <div class="scene-bg"></div>
+  <div class="particles" id="particles"></div>
+  <div class="quote-overlay">
+    <span class="quote-type" id="quoteType"></span>
+    <div class="quote-emoji" id="quoteEmoji"></div>
+    <div class="quote-text" id="quoteText"></div>
+    <div class="quote-sub" id="quoteSub"></div>
+  </div>
+</div>
+
+<!-- ACTIONS -->
+<div class="actions-bar">
+  <button class="act-btn" id="btnMeh" aria-label="Skip">&#128566;</button>
+  <button class="act-btn" id="btnFav" aria-label="Favorite">&#9825;</button>
+  <button class="act-btn" id="btnSound" aria-label="Sound">&#9835;</button>
+</div>
+
+<!-- FAVORITES -->
+<div class="favorites-view" id="favoritesView">
+  <div class="fav-title">&#10084;&#65039; your favorites</div>
+  <div id="favList"></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" id="navHome">&#127800;</button>
+  <button class="nav-btn" id="navFav">&#10084;&#65039;</button>
+</nav>
+
+<div class="swipe-hint" id="swipeHint">tap or swipe &rarr;</div>
+<div class="card-counter" id="counter"></div>
+<script src="cards.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
+  {cls:'scene-blueforest', particles:'butterflies'},
+  {cls:'scene-redmoon', particles:'sparkles'},
+  {cls:'scene-torii', particles:'petals'},
+  {cls:'scene-lotus', particles:'fireflies'},
+  {cls:'scene-blossomvillage', particles:'petals'},
+  {cls:'scene-ghostvillage', particles:'ghosts'},
+  {cls:'scene-cozywindow', particles:'sparkles'},
+  {cls:'scene-moonmountain', particles:'fireflies'},
+  {cls:'scene-goldenpalace', particles:'gold'},
+  {cls:'scene-seasidetown', particles:'sparkles'},
+  {cls:'scene-jade', particles:'petals'},
+  {cls:'scene-pinkcity', particles:'rain'}
+];
+// CARDS LOADED FROM cards.js
+// DELETE_FROM_HERE
+  {type:'quote',emoji:'✨',text:"You don't have to be productive every single day. Some days are for existing, and that's enough.",sub:'— gentle reminder'},
+  {type:'quote',emoji:'🦋',text:"The butterfly doesn't know how beautiful it is. But everyone else does. That's you.",sub:"— you're lovely"},
+  {type:'quote',emoji:'🌙',text:"Rest is not giving up. It's gathering strength for the next chapter.",sub:'— be kind to yourself'},
+  {type:'quote',emoji:'💫',text:"You survived 100% of your worst days. That's an undefeated record.",sub:'— unbreakable'},
+  {type:'quote',emoji:'🌷',text:'Let yourself be a beginner. Nobody starts as a masterpiece.',sub:'— patience'},
+  {type:'quote',emoji:'☁️',text:"Not everything needs to be figured out today. Some answers come with time, like flowers in spring.",sub:'— trust the timing'},
+  {type:'quote',emoji:'🕊️',text:"You don't owe anyone an explanation for taking care of yourself.",sub:'— boundaries are love'},
+  {type:'quote',emoji:'🌺',text:"Healing isn't linear. Some days you bloom, some days you rest. Both are growth.",sub:'— gentle progress'},
+  {type:'quote',emoji:'💐',text:"You're not behind. You're not late. You're exactly where you need to be right now.",sub:'— your own timeline'},
+  {type:'quote',emoji:'📖',text:"Those four novels in your head? They're waiting for you. No rush. Just one word at a time.",sub:'— the stories will come'},
+  {type:'quote',emoji:'🎙️',text:"Start the podcast. Share those stories. Even if only three people listen — those three people needed to hear you.",sub:'— your voice matters'},
+  {type:'quote',emoji:'🌊',text:"You don't need subscribers to validate your creativity. You create because it fills YOU up.",sub:"— art for art's sake"},
+  {type:'quote',emoji:'🏖️',text:"Plan that vacation. Even if it's months away. Give yourself something beautiful to look forward to.",sub:'— you deserve rest'},
+  {type:'quote',emoji:'💭',text:"Daydream freely. Those imaginary worlds in your head are not a waste of time — they're your superpower.",sub:'— imagination is magic'},
+  {type:'quote',emoji:'🌤️',text:"The right job is coming. One where you feel valued, where Monday doesn't feel like a punishment.",sub:'— it exists, keep looking'},
+  {type:'quote',emoji:'🎨',text:"Your hobby is yours. It doesn't have to make money. It doesn't have to impress anyone. It just has to make you happy.",sub:'— no monetization needed'},
+  {type:'quote',emoji:'📵',text:"Social media is a highlight reel of fiction. Your real life — messy, quiet, imperfect — is the actual story worth living.",sub:'— stay present'},
+  {type:'quote',emoji:'🧘',text:"You don't have to become a millionaire from what you love. Sometimes love is enough.",sub:'— redefine success'},
+  {type:'quote',emoji:'🌻',text:'Write for yourself. Create for yourself. The audience is a bonus, not the goal.',sub:'— create freely'},
+  {type:'quote',emoji:'🌙',text:"You are the poem someone hasn't written yet. You are the song playing in a distant café at 3 PM.",sub:'— you are art'},
+  {type:'quote',emoji:'🦢',text:'Softness is not weakness. The gentlest rain feeds the deepest roots.',sub:'— stay soft'},
+  {type:'quote',emoji:'🪷',text:"You carry storms inside you, and yet you bloom. That's not nothing — that's everything.",sub:'— resilience'},
+  {type:'quote',emoji:'🌸',text:"One day this heaviness will lift, and you'll look back and be so proud of yourself for staying.",sub:'— keep going'},
+  {type:'quote',emoji:'💫',text:"The universe didn't make a mistake with you. You are the exact shape the world needed.",sub:'— on purpose'},
+  {type:'quote',emoji:'🕯️',text:"Even on your dimmest days, you are someone's warmth. Remember that.",sub:'— your light'},
+  {type:'quote',emoji:'🌿',text:'Growth happens in silence. In the quiet days. In the doing-nothing-but-surviving days. That counts too.',sub:'— quiet growth'},
+  {type:'quote',emoji:'🫧',text:"Let the things that don't serve you float away like bubbles. You don't have to hold everything.",sub:'— release'},
+  {type:'quote',emoji:'🌈',text:"After every overwhelm comes a clearing. You're closer to it than you think.",sub:'— almost there'},
+  {type:'quote',emoji:'🪻',text:"You are not your productivity. You are not your job title. You are the person who notices sunsets. That's enough.",sub:'— enough'},
+  {type:'vibe',emoji:'🏖️',text:'Imagine: a small café by the sea. A worn paperback in your hands. Wind chimes singing softly. Salt breeze in your hair. You have nowhere to be.',sub:'— breathe in, breathe out'},
+  {type:'vibe',emoji:'📚',text:'Picture this: a cozy bookshop on a rainy afternoon. Warm lighting. The smell of old pages. A cat sleeping on the counter. You belong here.',sub:'— find your peace'},
+  {type:'vibe',emoji:'🌅',text:"You're on a rooftop at golden hour. The city hums below. A warm cup in your hands. The sky is painted just for you.",sub:'— this moment is yours'},
+  {type:'vibe',emoji:'🌸',text:'A cherry blossom path in spring. Petals drifting like snow. Soft footsteps. No destination. Just wandering, just being.',sub:'— slow down'},
+  {type:'vibe',emoji:'🏔️',text:'A mountain temple at dawn. Mist rolling through the valley. Silence so pure it feels like a prayer. You are at peace.',sub:'— serenity'},
+  {type:'vibe',emoji:'🌙',text:'A night garden. Fireflies dancing. The moon reflected in still water. You sit by the edge, finally breathing easy.',sub:'— let the night hold you'},
+  {type:'vibe',emoji:'☕',text:"A window seat on a train. Green hills scrolling by. Tea going cold because you're lost in thought. And that's perfectly fine.",sub:'— wander freely'},
+  {type:'vibe',emoji:'🪴',text:'Your dream apartment. Plants everywhere. Sunlight pooling on wooden floors. A half-written novel on the desk. No deadlines. Just you.',sub:'— someday soon'},
+  {type:'vibe',emoji:'🌊',text:"Bare feet in warm sand. Waves whispering. The horizon stretches endlessly. You don't need answers right now. Just this.",sub:'— just breathe'},
+  {type:'vibe',emoji:'🕯️',text:"A candlelit room. Soft music playing. Rain against the window. A blanket, a journal, a quiet evening that's all yours.",sub:"— you're safe here"},
+  {type:'vibe',emoji:'🏮',text:'Lanterns floating on dark water. Each one carries a worry away into the night. Watch them go. You are lighter now.',sub:'— let go'},
+  {type:'vibe',emoji:'🎋',text:'A bamboo forest at twilight. Light filtering through in golden threads. The world is quiet here. You can hear yourself think.',sub:'— clarity'},
+  {type:'vibe',emoji:'🦢',text:'A jade pond in a hidden garden. Cranes folding through the air. Time moves differently here — slowly, gently, for you.',sub:'— slow time'},
+  {type:'breathe',emoji:'🌬️',text:"Let's pause for a moment. Breathe in slowly... hold... breathe out gently. You're doing so well.",sub:'— 4 in, 4 hold, 4 out'},
+  {type:'breathe',emoji:'🫧',text:'Close your eyes. Imagine petals falling around you. Each exhale releases something heavy. Let it go.',sub:'— release with each breath'},
+  {type:'breathe',emoji:'🌸',text:'Inhale: "I am enough." Exhale: "I release what isn\'t mine to carry." Repeat until you believe it.',sub:'— you are enough'},
+  {type:'breathe',emoji:'☁️',text:"Breathe like the wind through cherry blossoms. Gentle. Effortless. You don't have to try so hard.",sub:'— easy does it'},
+  {type:'breathe',emoji:'🌙',text:"Three deep breaths. That's all. In through your nose... out through your mouth... one more... there you go.",sub:'— a gift to yourself'},
+  {type:'joke',emoji:'🐱',text:'Even cats take 16 hours of naps and everyone still adores them. Be the cat.',sub:'— nap without guilt'},
+  {type:'joke',emoji:'🧁',text:"Fun fact: you're doing better than every plant I've ever owned. And I loved those plants.",sub:'— thriving'},
+  {type:'joke',emoji:'🦦',text:"Otters hold hands when they sleep so they don't drift apart. Consider this me holding your hand right now.",sub:"— you're not alone"},
+  {type:'joke',emoji:'🐸',text:"Frogs don't overthink jumping into ponds. Sometimes you just gotta leap and splash.",sub:'— splash away'},
+  {type:'joke',emoji:'🍵',text:"You're like a perfect cup of tea — some people just aren't ready for your warmth, and that's their loss.",sub:'— stay warm'},
+  {type:'joke',emoji:'🦋',text:'Plot twist: the caterpillar literally dissolves into goo before becoming a butterfly. Your messy phase is transformation.',sub:'— glow up loading'},
+  {type:'joke',emoji:'🧸',text:'Your childhood self would be SO impressed that you can eat ice cream whenever you want now.',sub:'— small victories'},
+  {type:'affirm',emoji:'👑',text:"You're worth it. Not because of what you produce. Not because of your job. Because you exist and you're trying.",sub:'— inherently worthy'},
+  {type:'affirm',emoji:'🌟',text:'You deserve good things. A job that respects you. Rest without guilt. Joy without conditions.',sub:'— you deserve it all'},
+  {type:'affirm',emoji:'💎',text:'Your worth is not measured in followers, likes, or salary. You are a whole galaxy compressed into a person.',sub:'— immeasurable'},
+  {type:'affirm',emoji:'🌸',text:"It's okay if today is just about surviving. Tomorrow can be about thriving. One thing at a time.",sub:'— permission granted'},
+  {type:'affirm',emoji:'🦋',text:"You are allowed to change your mind, your path, your career, your life. Growth isn't betrayal.",sub:'— evolve freely'},
+  {type:'affirm',emoji:'💫',text:'The stress is temporary. The overwhelm is temporary. But your spirit? Permanent. Unbreakable. Eternal.',sub:'— this too shall pass'},
+  {type:'affirm',emoji:'🌷',text:"Focus only on the next right thing. Not all the things. Just the one next thing. You can do one thing.",sub:'— one step'},
+  {type:'affirm',emoji:'🕊️',text:"You don't have to carry burdens that aren't yours. Set them down. Walk lighter.",sub:'— not your weight'},
+  {type:'affirm',emoji:'🌺',text:'Life is allowed to be simple. Joy is allowed to be quiet. Success is allowed to look different for you.',sub:'— rewrite the rules'},
+  {type:'affirm',emoji:'✨',text:"Hey. Yes, you. You're doing better than you think. I promise.",sub:'— truth'},
+  {type:'affirm',emoji:'🐉',text:"You have a dragon's spirit inside you. Patient, ancient, powerful. Let it wake up when you need it.",sub:'— your inner power'},
+  {type:'affirm',emoji:'🏯',text:"Build your empire quietly. Brick by brick. Nobody needs to see the scaffolding — just the palace you'll become.",sub:'— silent strength'},
+  {type:'affirm',emoji:'🌊',text:"Like water, you adapt. Like mountains, you endure. Like the moon, you always come back full.",sub:'— elemental'},
+];
+// ===== STATE =====
+let idx = 0, shuffled = [], currentSceneCls = '';
+let favorites = JSON.parse(localStorage.getItem('mm2-favs')||'[]');
+let mehList = JSON.parse(localStorage.getItem('mm2-meh')||'[]');
+let soundOn = false, audioCtx = null;
+
+function shuffleArr(arr) {
+  let f = arr.filter(c => !mehList.includes(c.text));
+  if (f.length < 5) { mehList=[]; localStorage.removeItem('mm2-meh'); f=[...arr]; }
+  for (let i=f.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[f[i],f[j]]=[f[j],f[i]];}
+  return f;
+}
+
+function pickScene() {
+  let s;
+  do { s = scenes[Math.floor(Math.random()*scenes.length)]; } while(s.cls===currentSceneCls && scenes.length>1);
+  return s;
+}
+
+function makeParticles(type) {
+  const c = document.getElementById('particles'); c.innerHTML='';
+  const count = {petals:16,sparkles:22,fireflies:14,lanterns:8,butterflies:12,rain:45,gold:20,ghosts:8}[type]||15;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    if(type==='petals'){
+      el.className='p-petal';
+      el.style.left=Math.random()*100+'%';
+      el.style.width=(8+Math.random()*12)+'px'; el.style.height=el.style.width;
+      el.style.animationDuration=(6+Math.random()*10)+'s';
+      el.style.animationDelay=Math.random()*8+'s';
+      const cols=['rgba(255,182,193,0.7)','rgba(255,228,225,0.6)','rgba(255,200,220,0.5)','rgba(255,160,180,0.6)'];
+      el.style.background=`radial-gradient(ellipse,${cols[Math.floor(Math.random()*cols.length)]},transparent)`;
+    } else if(type==='sparkles'){
+      el.className='p-sparkle';
+      el.style.left=Math.random()*100+'%'; el.style.top=Math.random()*100+'%';
+      el.style.width=(2+Math.random()*4)+'px'; el.style.height=el.style.width;
+      el.style.color=['rgba(255,255,255,0.8)','rgba(255,215,0,0.7)','rgba(200,180,255,0.7)'][Math.floor(Math.random()*3)];
+      el.style.background=el.style.color;
+      el.style.animationDuration=(1.5+Math.random()*2.5)+'s';
+      el.style.animationDelay=Math.random()*5+'s';
+    } else if(type==='fireflies'){
+      el.className='p-firefly';
+      el.style.left=Math.random()*100+'%'; el.style.top=(20+Math.random()*60)+'%';
+      el.style.animationDuration=(4+Math.random()*6)+'s';
+      el.style.animationDelay=Math.random()*6+'s';
+    } else if(type==='lanterns'){
+      el.className='p-lantern';
+      el.style.left=(10+Math.random()*80)+'%'; el.style.top=(15+Math.random()*50)+'%';
+      el.style.animationDelay=Math.random()*3+'s';
+    } else if(type==='butterflies'){
+      el.className='p-butterfly';
+      el.style.left=Math.random()*100+'%'; el.style.top=(30+Math.random()*50)+'%';
+      el.style.animationDuration=(5+Math.random()*5)+'s';
+      el.style.animationDelay=Math.random()*6+'s';
+    } else if(type==='rain'){
+      el.className='p-rain';
+      el.style.left=Math.random()*100+'%';
+      el.style.height=(12+Math.random()*20)+'px';
+      el.style.animationDuration=(0.5+Math.random()*0.6)+'s';
+      el.style.animationDelay=Math.random()*2+'s';
+    } else if(type==='gold'){
+      el.className='p-gold';
+      el.style.left=Math.random()*100+'%';
+      el.style.animationDuration=(5+Math.random()*8)+'s';
+      el.style.animationDelay=Math.random()*6+'s';
+    } else if(type==='ghosts'){
+      el.className='p-ghost';
+      el.style.left=(10+Math.random()*80)+'%'; el.style.top=(30+Math.random()*50)+'%';
+      el.style.animationDelay=Math.random()*2+'s';
+      el.style.opacity=0.3+Math.random()*0.3;
+    }
+    c.appendChild(el);
+  }
+}
+function showCard() {
+  const card = shuffled[idx];
+  const scene = pickScene();
+  const el = document.getElementById('scene');
+  el.className = 'scene ' + scene.cls;
+  currentSceneCls = scene.cls;
+  makeParticles(scene.particles);
+
+  const qt = document.getElementById('quoteText');
+  qt.style.animation='none'; qt.offsetHeight; qt.style.animation='fadeInUp 0.7s ease both';
+  document.getElementById('quoteType').textContent =
+    card.type==='breathe'?'breathe':card.type==='vibe'?'imagine':card.type==='joke'?'smile':card.type==='affirm'?'you':'gentle reminder';
+  document.getElementById('quoteEmoji').textContent = card.emoji;
+  qt.textContent = card.text;
+  document.getElementById('quoteSub').textContent = card.sub;
+  document.getElementById('counter').textContent = (idx+1)+'/'+shuffled.length;
+  updateFavBtn();
+  if(soundOn) playChime();
+  if(idx>0) document.getElementById('swipeHint').style.display='none';
+}
+
+function nextCard(){idx=(idx+1)%shuffled.length;if(idx===0)shuffled=shuffleArr(cards);showCard();}
+function prevCard(){idx=(idx-1+shuffled.length)%shuffled.length;showCard();}
+
+// SWIPE
+let sx=0,sy=0;
+document.getElementById('scene').addEventListener('touchstart',e=>{sx=e.changedTouches[0].screenX;sy=e.changedTouches[0].screenY},{passive:true});
+document.getElementById('scene').addEventListener('touchend',e=>{
+  const dx=sx-e.changedTouches[0].screenX, dy=sy-e.changedTouches[0].screenY;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){dx>0?nextCard():prevCard();}
+},{passive:true});
+document.getElementById('scene').addEventListener('click',e=>{
+  if(e.target.closest('.act-btn')||e.target.closest('.nav-btn')||e.target.closest('.nav'))return;
+  nextCard();
+});
+
+// MEH
+document.getElementById('btnMeh').addEventListener('click',e=>{
+  e.stopPropagation();
+  const c=shuffled[idx];
+  if(!mehList.includes(c.text)){mehList.push(c.text);localStorage.setItem('mm2-meh',JSON.stringify(mehList));}
+  shuffled.splice(idx,1);
+  if(!shuffled.length)shuffled=shuffleArr(cards);
+  if(idx>=shuffled.length)idx=0;
+  showCard();
+});
+
+// FAV
+function updateFavBtn(){
+  const btn=document.getElementById('btnFav');
+  const isFav=favorites.some(f=>f.text===shuffled[idx].text);
+  btn.classList.toggle('fav-active',isFav);
+  btn.innerHTML=isFav?'&#10084;&#65039;':'&#9825;';
+}
+document.getElementById('btnFav').addEventListener('click',e=>{
+  e.stopPropagation();
+  const c=shuffled[idx];
+  const i=favorites.findIndex(f=>f.text===c.text);
+  if(i>=0)favorites.splice(i,1); else favorites.push({emoji:c.emoji,text:c.text,sub:c.sub});
+  localStorage.setItem('mm2-favs',JSON.stringify(favorites));
+  updateFavBtn();
+});
+// FAVORITES VIEW
+document.getElementById('navFav').addEventListener('click',()=>{
+  document.getElementById('favoritesView').classList.add('show');
+  document.getElementById('navFav').classList.add('active');
+  document.getElementById('navHome').classList.remove('active');
+  renderFavs();
+});
+document.getElementById('navHome').addEventListener('click',()=>{
+  document.getElementById('favoritesView').classList.remove('show');
+  document.getElementById('navHome').classList.add('active');
+  document.getElementById('navFav').classList.remove('active');
+});
+function renderFavs(){
+  const list=document.getElementById('favList');
+  if(!favorites.length){list.innerHTML='<div class="empty-fav">No favorites yet.<br>Tap &#9825; on cards you love.</div>';return;}
+  list.innerHTML=favorites.map((f,i)=>`<div class="fav-card"><button class="fav-remove" onclick="rmFav(${i})">&times;</button><div class="fav-card-emoji">${f.emoji}</div><div class="fav-card-text">${f.text}</div></div>`).join('');
+}
+function rmFav(i){favorites.splice(i,1);localStorage.setItem('mm2-favs',JSON.stringify(favorites));renderFavs();updateFavBtn();}
+
+// SOUND
+document.getElementById('btnSound').addEventListener('click',e=>{
+  e.stopPropagation();
+  soundOn=!soundOn;
+  document.getElementById('btnSound').classList.toggle('sound-active',soundOn);
+  if(soundOn)playChime();
+});
+function playChime(){
+  try{
+    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.connect(g);g.connect(audioCtx.destination);o.type='sine';
+    const notes=[523.25,587.33,659.25,783.99,880,1046.5,1174.66];
+    o.frequency.value=notes[Math.floor(Math.random()*notes.length)];
+    g.gain.setValueAtTime(0.1,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+2);
+    o.start(audioCtx.currentTime);o.stop(audioCtx.currentTime+2);
+  }catch(e){}
+}
+
+// KEYBOARD
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')nextCard();
+  if(e.key==='ArrowLeft')prevCard();
+});
+
+// INIT
+shuffled=shuffleArr(cards); showCard();
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
